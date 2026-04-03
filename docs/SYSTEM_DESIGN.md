@@ -7,26 +7,30 @@ Dokumen ini adalah ekspansi dokumen arsitektur dan bisnis logic Sistem Penilaian
 Diagram ini memperlihatkan scope operasi aktor (`Dosen` dan backend hipotetikal) terhadap sistem penilaian.
 
 ```mermaid
-usecase
-    title Use Case: Sistem Penilaian Mahasiswa
-    actor Dosen
-    actor "REST API (Backend)" as B
+flowchart LR
+    %% Aktor
+    Dosen([Dosen])
+    Backend([REST API Backend])
 
-    package "Aplikasi Penilaian (Frontend)" {
-        usecase "Input Nilai Form (10 Mahasiswa, 4 Aspek)" as UC1
-        usecase "Simpan Matriks Nilai" as UC2
-        usecase "Lihat Histori Penilaian" as UC3
-        usecase "Cetak Laporan / Unduh JSON" as UC4
-        usecase "Lihat Kalkulasi Analitik (Rata-rata Aspek)" as UC5
-    }
+    %% Sistem
+    subgraph Frontend [Aplikasi Penilaian Frontend]
+        direction TB
+        UC1(Input Nilai Form<br/>10 Mahasiswa, 4 Aspek)
+        UC2(Simpan Matriks Nilai)
+        UC3(Lihat Histori Penilaian)
+        UC4(Cetak Laporan / Unduh JSON)
+        UC5(Lihat Kalkulasi Analitik)
+    end
 
+    %% Relasi
     Dosen --> UC1
     Dosen --> UC2
     Dosen --> UC3
-    UC3 .> UC4 : <<extend>>
-    UC3 .> UC5 : <<extend>>
     
-    UC2 --> B : (Future) Sinkronisasi Database Pusat
+    UC3 -.->|extend| UC4
+    UC3 -.->|extend| UC5
+    
+    UC2 -->|Future Sync| Backend
 ```
 
 ## 2. Sequence Diagram (Alur Interaksi Aplikasi & API Hub)
